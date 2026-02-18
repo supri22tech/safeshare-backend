@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe Share | Expert Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-dark: #0a192f;
+            --accent-blue: #00d2ff;
+            --premium-white: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #112240, #0a192f);
+            color: var(--premium-white);
+            min-height: 100vh;
+            margin: 0;
+            background-image: linear-gradient(rgba(10, 25, 47, 0.9), rgba(10, 25, 47, 0.9)),
+                              url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        .top-nav {
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .logout-link {
+            text-decoration: none;
+            color: #ff4d4d;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            border: 1px solid #ff4d4d;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .logout-link:hover {
+            background: #ff4d4d;
+            color: white;
+            box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
+        }
+
+        .hero-title {
+            margin-top: 60px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .hero-title h1 {
+            font-weight: 700;
+            font-size: 2.8rem;
+            background: linear-gradient(to right, #fff, var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .expert-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding-bottom: 50px;
+        }
+
+        .expert-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(15px);
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.4s;
+            text-decoration: none !important;
+            color: white;
+        }
+
+        .expert-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 15px 35px rgba(0, 210, 255, 0.1);
+        }
+
+        .expert-card i {
+            font-size: 2.5rem;
+            color: var(--accent-blue);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .expert-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .expert-card p {
+            color: #8892b0;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Logic for Hiding/Showing sections */
+        #content-wrapper {
+            /* If path is NOT home, show this. If path IS home, hide this */
+            display: {% if request.path == '/myapp/expert_home/' %} none {% else %} block {% endif %};
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        #home-menu {
+            /* If path IS home, show this. If path NOT home, hide this */
+            display: {% if request.path == '/myapp/expert_home/' %} block {% else %} none {% endif %};
+        }
+
+        .back-btn {
+            background: transparent;
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+            padding: 8px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .content-body-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <a href="/myapp/expert_home/" class="brand">SAFE<span style="color:white">SHARE</span></a>
+        <a href="/myapp/" class="logout-link">
+            <i class="fas fa-power-off me-2"></i> TERMINATE SESSION
+        </a>
+    </nav>
+
+    <div class="container">
+
+        <div id="home-menu">
+            <div class="hero-title">
+                <h1>Expert Control Center</h1>
+                <p style="color: #8892b0;">Authentication Successful. System ready for secure tip and guideline management.</p>
+            </div>
+
+            <div class="expert-grid">
+                <a href="/myapp/expert_view_tips/" class="expert-card">
+                    <i class="fas fa-fingerprint"></i>
+                    <h3>Security Tips</h3>
+                    <p>Review and manage all expert security insights.</p>
+                </a>
+
+                <a href="/myapp/expert_view_guideline/" class="expert-card">
+                    <i class="fas fa-shield-halved"></i>
+                    <h3>Guidelines</h3>
+                    <p>Audit and enforce operational safety standards.</p>
+                </a>
+
+                <a href="/myapp/expert_view_profile/" class="expert-card">
+                    <i class="fas fa-user-secret"></i>
+                    <h3>Expert Profile</h3>
+                    <p>Manage your credentials and encryption settings.</p>
+                </a>
+            </div>
+        </div>
+
+        <div id="content-wrapper">
+            <a href="/myapp/expert_home/" class="back-btn">
+                <i class="fas fa-arrow-left me-2"></i> SYSTEM OVERVIEW
+            </a>
+            <div class="content-body-card">
+                {% block body %}
+                {% endblock %}
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expert Identity | Secure Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Replicating Home Page UI Variables */
+        :root {
+            --primary-dark: #0a192f;
+            --secondary-dark: #112240;
+            --accent-blue: #00d2ff;
+            --premium-white: #e6f1ff;
+            --text-dim: #8892b0;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: var(--primary-dark);
+            color: var(--premium-white);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        /* Back Navigation Styling */
+        .nav-header {
+            max-width: 850px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-return {
+            background: rgba(0, 210, 255, 0.05);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            padding: 8px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+
+        .btn-return:hover {
+            background: var(--accent-blue);
+            color: var(--primary-dark);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+        }
+
+        /* Profile Card Glassmorphism */
+        .profile-container {
+            max-width: 850px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .sidebar-panel {
+            background: rgba(0, 0, 0, 0.2);
+            border-right: 1px solid var(--border);
+            padding: 50px 30px;
+        }
+
+        .img-frame img {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-blue);
+            object-fit: cover;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+        }
+
+        .rank-tag {
+            background: var(--accent-blue);
+            color: #000;
+            font-weight: 800;
+            padding: 4px 15px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+
+        /* Information Styling */
+        .data-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--accent-blue);
+            display: block;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .data-value {
+            font-size: 1.05rem;
+            color: #fff;
+            margin-bottom: 25px;
+        }
+
+        /* Update Button - Home Style */
+        .btn-update-trigger {
+            background: transparent;
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            font-weight: 700;
+            padding: 12px 30px;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .btn-update-trigger:hover {
+            background: var(--accent-blue);
+            color: #000;
+        }
+
+        /* Modal Overrides to match Dashboard */
+        .modal-content {
+            background: var(--secondary-dark) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 24px !important;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border) !important;
+            color: white !important;
+            padding: 12px !important;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-blue) !important;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.2) !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-4">
+    <div class="nav-header">
+        <h5 class="m-0 fw-bold" style="color: var(--accent-blue); letter-spacing: 2px;">SECURITY IDENTITY</h5>
+        <button onclick="history.back()" class="btn-return">
+            <i class="fas fa-chevron-left me-2"></i> DASHBOARD
+        </button>
+    </div>
+
+    <div class="profile-container mx-auto">
+        <div class="row g-0">
+            <div class="col-md-4 sidebar-panel d-flex flex-column align-items-center text-center">
+                <div class="img-frame mb-3">
+                    {% if data.Photo %}
+                        <img src="{{ data.Photo.url }}" alt="Expert">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ data.Name }}&background=00d2ff&color=fff&size=150" alt="Expert">
+                    {% endif %}
+                </div>
+                <h4 class="fw-bold text-white mb-2">{{ data.Name }}</h4>
+                <span class="rank-tag mb-4">EXPERT v2.0</span>
+
+                <div class="mt-auto">
+                    <p class="data-label">VERIFIED PROOF</p>
+                    {% if data.proof %}
+                        <a href="{{ data.proof.url }}" target="_blank" class="text-info text-decoration-none small">
+                            <i class="fas fa-file-shield me-2"></i>View Official Doc
+                        </a>
+                    {% else %}
+                        <span class="text-muted small">No Proof Uploaded</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-md-8 p-5">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="data-label">Email Address</label>
+                        <p class="data-value">{{ data.Email }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="data-label">Secure Phone</label>
+                        <p class="data-value">{{ data.Phone }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="data-label">Deployment Region</label>
+                        <p class="data-value">{{ data.district }}, {{ data.place }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="data-label">Postal Code</label>
+                        <p class="data-value">{{ data.pin }}</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-top" style="border-color: rgba(255,255,255,0.05) !important;">
+                    <button type="button" class="btn btn-update-trigger w-100" data-bs-toggle="modal" data-bs-target="#editModal">
+                        <i class="fas fa-user-gear me-2"></i> EDIT SECURITY PROFILE
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 p-4">
+                <h5 class="modal-title fw-bold text-info"><i class="fas fa-shield-halved me-2"></i>Update Credentials</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/myapp/expert_update_profile_post/" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="data-label">Full Name</label>
+                            <input type="text" name="textfield" class="form-control" value="{{ data.Name }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="data-label">Email</label>
+                            <input type="email" name="textfield2" class="form-control" value="{{ data.Email }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Phone</label>
+                            <input type="text" name="textfield3" class="form-control" value="{{ data.Phone }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Place</label>
+                            <input type="text" name="textfield6" class="form-control" value="{{ data.place }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">District</label>
+                            <input type="text" name="textfield8" class="form-control" value="{{ data.district }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">PIN</label>
+                            <input type="text" name="textfield7" class="form-control" value="{{ data.pin }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Update Photo</label>
+                            <input type="file" name="textfield4" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Update Proof</label>
+                            <input type="file" name="proof" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-info px-5 fw-bold">SAVE CHANGES</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

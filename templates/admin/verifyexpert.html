@@ -1,0 +1,193 @@
+{% extends 'adminindex.html' %}
+{% block body %}
+
+<style>
+    /* Card Container */
+    .verify-container {
+        background: #1a1d2b;
+        border-radius: 20px;
+        border: 1px solid #2d324d;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+
+    /* Header styling */
+    .verify-header {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 25px 30px;
+        border-bottom: 1px solid #2d324d;
+    }
+
+    /* Table Reset */
+    .table {
+        color: #f8fafc;
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: rgba(255, 255, 255, 0.04);
+        color: #94a3b8;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1.2px;
+        padding: 18px;
+        border: none;
+    }
+
+    .table td {
+        padding: 15px 18px;
+        border-bottom: 1px solid #2d324d;
+        vertical-align: middle;
+    }
+
+    /* Profile & Proof Image Styling */
+    .img-thumb {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 2px solid #2d324d;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: zoom-in;
+    }
+
+    .img-thumb:hover {
+        transform: scale(1.5);
+        border-color: #a29bfe;
+        z-index: 10;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .status-pending { background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.2); }
+    .status-accepted { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+    .status-rejected { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+
+    /* Action Buttons */
+    .action-btn {
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 6px;
+        display: inline-block;
+        transition: 0.2s;
+    }
+
+    .btn-accept { background: #10b981; color: #fff; }
+    .btn-accept:hover { background: #059669; color: #fff; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+
+    .btn-reject { background: #ef4444; color: #fff; }
+    .btn-reject:hover { background: #dc2626; color: #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+
+    .link-undo { color: #94a3b8; font-size: 0.7rem; font-style: italic; }
+    .link-undo:hover { color: #a29bfe; }
+
+</style>
+
+<div class="container-fluid py-4">
+    <div class="verify-container">
+        
+        <div class="verify-header d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-1 fw-bold text-white">Expert Verifications</h4>
+                <p class="text-muted small mb-0">Review credentials and update account status</p>
+            </div>
+            <div class="text-end">
+                <i class="bi bi-person-badge fs-2 text-primary opacity-50"></i>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>Expert Profile</th>
+                        <th>Contact Details</th>
+                        <th>Address</th>
+                        <th class="text-center">ID Proof</th>
+                        <th class="text-center">Verification Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in data %}
+                    <tr>
+                        <td class="text-center text-muted small">{{ forloop.counter }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ i.Photo.url }}" class="img-thumb me-3 shadow-sm" alt="Profile">
+                                <div>
+                                    <div class="fw-bold text-white">{{ i.Name }}</div>
+                                    <div class="text-muted small">UID: #EX-{{ i.id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="small"><i class="bi bi-envelope me-2 text-muted"></i>{{ i.Email }}</div>
+                            <div class="small mt-1"><i class="bi bi-phone me-2 text-muted"></i>{{ i.Phone }}</div>
+                        </td>
+                        <td>
+                            <div class="small text-muted" style="max-width: 150px;">
+                                <i class="bi bi-geo-alt me-1"></i> {{ i.place }}, {{ i.district }} - {{ i.pincode }}
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <div class="user-img-wrapper">
+                                <img src="{{ i.proof.url }}" class="img-thumb" alt="Proof">
+                                <div class="x-small text-muted mt-1 text-uppercase fw-bold" style="font-size: 10px;">Document</div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            {% if i.status == 'pending' %}
+                                <div class="d-flex flex-column gap-2">
+                                    <a href="/myapp/verify_expert_accept/{{ i.id }}" class="action-btn btn-accept">
+                                        <i class="bi bi-check2-circle me-1"></i> Accept
+                                    </a>
+                                    <a href="/myapp/verify_expert_reject/{{ i.id }}" class="action-btn btn-reject">
+                                        <i class="bi bi-x-circle me-1"></i> Reject
+                                    </a>
+                                </div>
+
+                            {% elif i.status == 'Accepted' %}
+                                <span class="status-badge status-accepted mb-2 d-inline-block">Accepted</span>
+                                <br>
+                                <a href="/myapp/verify_expert_reject/{{ i.id }}" class="link-undo text-decoration-none">
+                                    <i class="bi bi-arrow-counterclockwise"></i> Change to Reject?
+                                </a>
+
+                            {% elif i.status == 'Rejected' %}
+                                <span class="status-badge status-rejected mb-2 d-inline-block">Rejected</span>
+                                <br>
+                                <a href="/myapp/verify_expert_accept/{{ i.id }}" class="link-undo text-decoration-none">
+                                    <i class="bi bi-arrow-counterclockwise"></i> Change to Accept?
+                                </a>
+
+                            {% else %}
+                                <span class="status-badge bg-secondary text-white">{{ i.status }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <i class="bi bi-clipboard-x display-4 text-muted"></i>
+                            <p class="text-muted mt-3">No experts awaiting verification.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

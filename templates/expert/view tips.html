@@ -1,0 +1,122 @@
+{% extends 'expert/expert_home.html' %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 style="font-weight: 700; color: #ffffff; margin: 0;">Security Management</h2>
+    <a href="/myapp/expert_add_tips/" class="btn btn-dark shadow-sm">
+        <i class="fas fa-plus me-2"></i> New Protocol
+    </a>
+</div>
+
+<div class="table-responsive">
+    <form id="form1" name="form1" method="post" action="">
+        <table class="table custom-card-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Protocol Tip</th>
+                    <th>Technical Details</th>
+                    <th>Timestamp</th>
+                    <th class="text-center">Control</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in data %}
+                <tr class="table-row-card">
+                    <td class="index-cell">{{ forloop.counter }}</td>
+                    <td class="title-cell">{{ i.tips }}</td>
+                    <td class="detail-cell">{{ i.details }}</td>
+                    <td class="date-cell">{{ i.date }}</td>
+                    <td class="text-center">
+                        <div class="action-wrapper">
+                            <a href="/myapp/expert_edit_tips/{{ i.id }}" class="btn-action edit">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a href="/myapp/expert_delete_tips/{{ i.id }}" class="btn-action delete" onclick="return confirm('Archive this record?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<style>
+    /* Premium Card-Table Styling */
+    .custom-card-table {
+        border-collapse: separate;
+        border-spacing: 0 12px; /* Creates the card gap */
+        background: transparent;
+    }
+
+    /* Column Headers */
+    .custom-card-table thead th {
+        color: #5d6d7e;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        border: none;
+        padding: 10px 20px;
+    }
+
+    /* Individual Row Appearance (The Card) */
+    .table-row-card {
+        background: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s ease;
+    }
+
+    .table-row-card:hover {
+        transform: scale(1.01);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Black Font Styling */
+    .table-row-card td {
+        padding: 20px;
+        vertical-align: middle;
+        border: none;
+        color: #000000 !important; /* Explicit Black Font */
+        font-size: 0.95rem;
+    }
+
+    .index-cell { border-radius: 10px 0 0 10px; font-weight: 700; color: #3498db !important; }
+    .title-cell { font-weight: 600; width: 25%; }
+    .detail-cell { color: #333333 !important; font-size: 0.85rem; width: 40%; }
+    .date-cell { font-size: 0.8rem; color: #666 !important; border-radius: 0; }
+
+    /* Action Buttons */
+    .action-wrapper {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        border-radius: 0 10px 10px 0;
+    }
+
+    .btn-action {
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .edit { background: #f0f7ff; color: #2980b9; }
+    .edit:hover { background: #2980b9; color: #fff; }
+
+    .delete { background: #fff5f5; color: #e74c3c; }
+    .delete:hover { background: #e74c3c; color: #fff; }
+
+    /* Last TD rounding */
+    .table-row-card td:last-child {
+        border-radius: 0 10px 10px 0;
+    }
+</style>
+{% endblock %}

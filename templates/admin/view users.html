@@ -1,0 +1,215 @@
+{% extends 'adminindex.html' %}
+{% block body %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    :root {
+        --bg-black: #0f111a;
+        --card-dark: #1a1d2b;
+        --border-color: #2d324d;
+        --accent-neon: #a29bfe;
+        --text-bright: #f8fafc;
+        --glass-shine: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Seamless integration with your admin dashboard */
+    .main-content {
+        padding: 1.5rem;
+        color: var(--text-bright);
+    }
+
+    .table-container {
+        background: var(--card-dark);
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+
+    .table-header-custom {
+        background: linear-gradient(to bottom, var(--glass-shine), transparent);
+        border-bottom: 1px solid var(--border-color);
+        padding: 25px;
+    }
+
+    /* Stats Card Styling */
+    .mini-stats {
+        background: var(--card-dark);
+        border: 1px solid var(--border-color);
+        border-radius: 15px;
+        padding: 20px;
+        transition: 0.3s;
+    }
+    .mini-stats:hover { border-color: var(--accent-neon); }
+
+    .header-icon-box {
+        background: linear-gradient(135deg, #6f42c1, #a29bfe);
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        box-shadow: 0 0 15px rgba(111, 66, 193, 0.4);
+    }
+
+    /* Enhanced Table UI */
+    .table { color: var(--text-bright); margin-bottom: 0; }
+    .table thead th {
+        background-color: rgba(255, 255, 255, 0.02);
+        color: var(--);
+        border-bottom: 1px solid var(--border-color);
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 1.5px;
+        padding: 20px 15px;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+        padding: 18px 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .user-img {
+        width: 45px;
+        height: 45px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+    }
+
+    .badge-neon {
+        background: rgba(162, 155, 254, 0.1);
+        color: var(--accent-neon);
+        border: 1px solid rgba(162, 155, 254, 0.3);
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+    }
+
+    .btn-export {
+        background: var(--accent-neon);
+        color: var(--bg-black);
+        border: none;
+        font-weight: 700;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(162, 155, 254, 0.3);
+    }
+
+    .btn-export:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(162, 155, 254, 0.5);
+        background: #b3adff;
+    }
+</style>
+
+<div class="main-content">
+    <div class="container-fluid">
+
+        <div class="row mb-4">
+            <div class="col-md-4 col-xl-3">
+                <div class="mini-stats d-flex align-items-center">
+                    <div class="header-icon-box me-3"><i class="bi bi-people-fill text-white fs-5"></i></div>
+                    <div>
+                        <div class=" small fw-bold">DATABASE CAPACITY</div>
+                        <div class="h4 fw-bold mb-0 text-white">{{ data|length }} <span class="fs-6 fw-normal ">Users</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container animate__animated animate__fadeIn">
+            <div class="table-header-custom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div class="d-flex align-items-center">
+                    <div class="header-icon-box me-3">
+                        <i class="bi bi-person-badge-fill text-white fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold">System User Directory</h4>
+                        <p class=" small mb-0 font-monospace">Encrypted Ledger: SHA-256 Validated</p>
+                    </div>
+                </div>
+
+                <button onclick="exportTableToExcel()" class="btn btn-export rounded-pill px-4">
+                    <i class="bi bi-file-earmark-excel-fill me-2"></i>EXPORT TO EXCEL
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover" id="userTable">
+                    <thead>
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th>Identity & Contact</th>
+                            <th>Date of Birth</th>
+                            <th>Gender</th>
+                            <th>Telecom</th>
+                            <th>Geographic ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in data %}
+                        <tr>
+                            <td class="text-center  small">{{ forloop.counter }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ i.photo.url }}" class="user-img me-3" alt="User">
+                                    <div>
+                                        <div class="fw-bold ">{{ i.name }}</div>
+                                        <div class="small  font-monospace">{{ i.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small"><i class="bi bi-calendar3 me-2 text-accent-neon"></i>{{ i.dob }}</div>
+                            </td>
+                            <td>
+                                <span class="badge-neon text-uppercase">{{ i.gender }}</span>
+                            </td>
+                            <td>
+                                <div class="small fw-bold text-50"><i class="bi bi-phone-vibrate me-2"></i>{{ i.phone }}</div>
+                            </td>
+                            <td>
+                                <div class="small">
+                                    <span class="">{{ i.place }}</span><br>
+                                    <span class=" fs-xs">{{ i.district }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class=" opacity-50 mb-3"><i class="bi bi-shield-slash fs-1"></i></div>
+                                <h5 class=" fw-light">No records found in active partition.</h5>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function exportTableToExcel() {
+    // 1. Target the table
+    const table = document.getElementById("userTable");
+
+    // 2. Convert table to workbook
+    const wb = XLSX.utils.table_to_book(table, { sheet: "SafeShare_Users" });
+
+    // 3. Generate filename with date
+    const date = new Date().toISOString().slice(0, 10);
+    const filename = `SafeShare_UserList_${date}.xlsx`;
+
+    // 4. Download file
+    XLSX.writeFile(wb, filename);
+}
+</script>
+
+{% endblock %}

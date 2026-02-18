@@ -1,0 +1,134 @@
+{% extends 'expert/expert_home.html' %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 style="font-weight: 700; color: #ffffff; margin: 0;">Operational Guidelines</h2>
+        <p style="color: #5d6d7e; font-size: 0.9rem; margin: 0;">Protocol oversight and system standards</p>
+    </div>
+    <a href="/myapp/expert_add_guideline/" class="btn btn-dark shadow-sm">
+        <i class="fas fa-shield-plus me-2"></i> New Guideline
+    </a>
+</div>
+
+<div class="table-responsive">
+    <form id="form1" name="form1" method="post" action="">
+        <table class="table custom-guideline-table">
+            <thead>
+                <tr>
+                    <th width="80">CODE</th>
+                    <th>PROTOCOL TITLE</th>
+                    <th width="150">TIMESTAMP</th>
+                    <th>TECHNICAL DETAILS</th>
+                    <th width="120" class="text-center">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in data %}
+                <tr class="guideline-card-row">
+                    <td><span class="badge-id">{{ forloop.counter }}</span></td>
+                    <td class="text-black fw-bold">{{ i.title }}</td>
+                    <td class="text-black"><i class="far fa-clock me-2 opacity-50"></i>{{ i.date }}</td>
+                    <td class="text-black opacity-75">{{ i.details }}</td>
+                    <td class="text-center">
+                        <div class="btn-group-custom">
+                            <a href="/myapp/expert_edit_guideline/{{ i.id }}" class="card-action-btn edit" title="Edit Protocol">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="/myapp/expert_delete_guideline/{{ i.id }}" class="card-action-btn delete"
+                               onclick="return confirm('Confirm archive of this guideline?')" title="Delete Protocol">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<style>
+    /* Card-Table Logic */
+    .custom-guideline-table {
+        border-collapse: separate;
+        border-spacing: 0 12px;
+        background: transparent;
+    }
+
+    .custom-guideline-table thead th {
+        color: #5d6d7e;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 1.5px;
+        border: none;
+        padding: 10px 20px;
+    }
+
+    /* The White Card Row */
+    .guideline-card-row {
+        background: #ffffff !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .guideline-card-row:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Black Font Enforcement */
+    .guideline-card-row td {
+        padding: 20px;
+        vertical-align: middle;
+        border: none;
+        color: #000000 !important; /* Forces black text */
+        font-size: 0.95rem;
+    }
+
+    /* ID Badge */
+    .badge-id {
+        background: #f1f5f9;
+        color: #1e293b;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+    }
+
+    /* Action Buttons */
+    .btn-group-custom {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .card-action-btn {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: 0.2s;
+        font-size: 0.9rem;
+    }
+
+    .edit { background: #e0f2fe; color: #0369a1; }
+    .edit:hover { background: #0369a1; color: #fff; }
+
+    .delete { background: #fee2e2; color: #b91c1c; }
+    .delete:hover { background: #b91c1c; color: #fff; }
+
+    /* Fix rounding for card corners */
+    .guideline-card-row td:first-child { border-radius: 12px 0 0 12px; }
+    .guideline-card-row td:last-child { border-radius: 0 12px 12px 0; }
+
+    /* Responsive fix */
+    .table > :not(caption) > * > * {
+        box-shadow: none !important;
+    }
+</style>
+{% endblock %}

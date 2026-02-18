@@ -1,0 +1,34 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract PostRecords {
+    struct Post {
+        string id;
+        string caption;
+        string description;
+        string image;
+        string date;
+
+    }
+
+    mapping(uint256 => Post) private Posts;
+    uint256[] private PostIds; // Track IDs
+    // Add student and track ID
+
+    uint256 private index_Post=0;
+
+    function addPostRecords( string memory id, string memory caption, string memory description, string memory image, string memory date) public {
+        index_Post=index_Post+1;
+        PostIds.push(index_Post);
+        Posts[index_Post] = Post(id, caption,description,image,date);
+    }
+    // Get single student
+    function getPostRecords(uint256 id) public view returns (string memory, string memory,string memory,string memory,string memory) {
+        Post memory Post = Posts[id];
+        return (Post.id, Post.caption, Post.description,Post.image,Post.date);
+    }
+    // Get all student IDs
+    function getAllPostRecordsIds() public view returns (uint256[] memory) {
+        return PostIds;
+    }
+}

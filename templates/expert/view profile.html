@@ -1,0 +1,172 @@
+{% extends 'expert/expert_home.html' %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h2 style="font-weight: 700; color: var(--accent-blue); letter-spacing: 1px;">EXPERT IDENTITY</h2>
+        <p style="color: #8892b0;">Verified Security Personnel Profile</p>
+    </div>
+
+    <div class="profile-identity-card mx-auto">
+        <div class="row g-0">
+            <div class="col-md-4 d-flex flex-column align-items-center justify-content-center border-end-glass">
+                <div class="profile-photo-wrapper mb-3">
+                    <img src="https://ui-avatars.com/api/?name={{ data.name }}&background=00d2ff&color=fff&size=150" alt="Expert Photo">
+                </div>
+                <span class="badge bg-info text-dark px-3 py-2 fw-bold">ID: #EXP-{{ data.id }}</span>
+            </div>
+
+            <div class="col-md-8 p-4">
+                <div class="detail-group">
+                    <label>Full Name</label>
+                    <p>{{ data.name }}</p>
+                </div>
+                <div class="detail-group">
+                    <label>Email Address</label>
+                    <p>{{ data.email }}</p>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="detail-group">
+                            <label>Place</label>
+                            <p>{{ data.place }}</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="detail-group">
+                            <label>Qualification</label>
+                            <p>{{ data.qualification }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-end">
+                    <button class="btn btn-edit-profile" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <i class="fas fa-user-edit me-2"></i> Update Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-glass">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-white">Edit Expert Credentials</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/myapp/expert_edit_profile_post/" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small text-info">Full Name</label>
+                        <input type="text" class="form-control glass-input" name="name" value="{{ data.name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-info">Email</label>
+                        <input type="email" class="form-control glass-input" name="email" value="{{ data.email }}">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small text-info">Place</label>
+                            <input type="text" class="form-control glass-input" name="place" value="{{ data.place }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small text-info">Qualification</label>
+                            <input type="text" class="form-control glass-input" name="qualification" value="{{ data.qualification }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-info btn-sm px-4 fw-bold">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Profile Identity Card Styling */
+    .profile-identity-card {
+        max-width: 800px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        backdrop-filter: blur(15px);
+        overflow: hidden;
+    }
+
+    .border-end-glass {
+        border-right: 1px solid var(--border);
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-photo-wrapper img {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        border: 3px solid var(--accent-blue);
+        padding: 5px;
+        object-fit: cover;
+    }
+
+    .detail-group {
+        margin-bottom: 20px;
+    }
+
+    .detail-group label {
+        display: block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--accent-blue);
+        margin-bottom: 5px;
+    }
+
+    .detail-group p {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: white;
+        margin: 0;
+    }
+
+    .btn-edit-profile {
+        background: transparent;
+        border: 1px solid var(--accent-blue);
+        color: var(--accent-blue);
+        border-radius: 8px;
+        padding: 8px 20px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .btn-edit-profile:hover {
+        background: var(--accent-blue);
+        color: var(--primary-dark);
+        box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+    }
+
+    /* Modal Styling */
+    .custom-modal-glass {
+        background: rgba(10, 25, 47, 0.95) !important;
+        border: 1px solid var(--border) !important;
+        backdrop-filter: blur(20px);
+        border-radius: 20px !important;
+    }
+
+    .glass-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid var(--border) !important;
+        color: white !important;
+        border-radius: 8px !important;
+    }
+
+    .glass-input:focus {
+        border-color: var(--accent-blue) !important;
+        box-shadow: 0 0 10px rgba(0, 210, 255, 0.2) !important;
+    }
+</style>
+{% endblock %}

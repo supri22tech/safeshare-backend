@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+{% extends 'adminindex.html' %}
+{% block body %}
+
+    <h2>send reply</h2>
+    <form>
+    <table border="3" cellspacing="3" cellpadding="4" class="table table-hover table-striped table-bordered">
+        <tr>
+            <th>
+                reply
+            </th>
+            <td><input type="text" name="reply" class="form-control"></td>
+        </tr>
+        <tr>
+            <th><button>send</button></th>
+        </tr>
+    </table>
+    </form>
+    {% endblock %}
+</body>
+</html>

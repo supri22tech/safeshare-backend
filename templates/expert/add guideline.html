@@ -1,0 +1,135 @@
+{% extends 'expert/expert_home.html' %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="mb-4">
+        <h2 style="font-weight: 700; color: #1a2b3c; margin: 0;">Create New Protocol</h2>
+        <p style="color: #5d6d7e; font-size: 0.9rem;">Register a new operational safety standard in the system.</p>
+    </div>
+
+    <div class="guideline-form-card mx-auto shadow-lg">
+        <form id="form1" name="form1" method="post" action="/myapp/expert_add_guideline_post/">
+            {% csrf_token %}
+            
+            <div class="p-4 p-md-5">
+                <div class="mb-4">
+                    <label class="form-label-custom">Guideline Title</label>
+                    <div class="input-group-custom">
+                        <span class="icon-box"><i class="fas fa-heading"></i></span>
+                        <input type="text" name="textfield" class="form-control-custom" placeholder="e.g., Encryption Standards v1" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label-custom">Technical Details & Descriptions</label>
+                    <div class="input-group-custom align-items-start">
+                        <span class="icon-box mt-2"><i class="fas fa-align-left"></i></span>
+                        <textarea name="textfield2" class="form-control-custom" rows="5" placeholder="Detailed breakdown of the protocol..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="pt-3">
+                    <button type="submit" class="btn-submit-custom">
+                        <i class="fas fa-shield-check me-2"></i> PUBLISH TO SYSTEM
+                    </button>
+                    <a href="/myapp/expert_view_guideline/" class="btn-cancel-custom mt-3 d-block text-center">
+                        Discard and Return
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Form Card Container */
+    .guideline-form-card {
+        max-width: 650px;
+        background: #ffffff;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    /* Labels - Professional Black */
+    .form-label-custom {
+        display: block;
+        font-weight: 700;
+        color: #1a2b3c;
+        margin-bottom: 8px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Input Group Container */
+    .input-group-custom {
+        display: flex;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .input-group-custom:focus-within {
+        border-color: #3498db;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+    }
+
+    /* Icons */
+    .icon-box {
+        padding: 12px 15px;
+        color: #94a3b8;
+        font-size: 1rem;
+    }
+
+    /* Inputs - Solid Black Font */
+    .form-control-custom {
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 12px 15px 12px 5px;
+        color: #000000 !important;
+        font-weight: 500;
+        outline: none;
+    }
+
+    .form-control-custom::placeholder {
+        color: #94a3b8;
+        font-weight: 400;
+    }
+
+    /* Action Buttons */
+    .btn-submit-custom {
+        width: 100%;
+        background: #1a2b3c;
+        color: #ffffff;
+        border: none;
+        padding: 14px;
+        border-radius: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(26, 43, 60, 0.2);
+    }
+
+    .btn-submit-custom:hover {
+        background: #000000;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-cancel-custom {
+        color: #64748b;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+    .btn-cancel-custom:hover {
+        color: #e74c3c;
+    }
+</style>
+{% endblock %}

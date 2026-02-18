@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Admin Dashboard - Professional Homepage</title>
+
+    <!-- Fonts & Icons -->
+    <link href="../static/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- SB Admin 2 Core CSS -->
+    <link href="../static/admin/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Nunito', sans-serif; background: #f8f9fc; }
+        .welcome-header { font-size: 2.2rem; font-weight: 800; color: #2c3e50; }
+        .stats-card {
+            border-left: 5px solid #4e73df;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            background: #fff;
+        }
+        .stats-card:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .stats-card i { font-size: 2.5rem; opacity: 0.7; }
+        .stats-card .text-primary { color: #4e73df !important; }
+        .stats-card .text-success { color: #1cc88a !important; }
+        .stats-card .text-warning { color: #f6c23e !important; }
+        .stats-card .text-danger { color: #e74a3b !important; }
+
+        .quick-link-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        .quick-link-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #34495e;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #4e73df;
+            display: inline-block;
+            padding-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar (unchanged) -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <!-- Your existing sidebar code (100% unchanged) -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="adminindex.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-laugh-wink"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+            </a>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="adminindex.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider">
+            <li class="nav-item">
+                <a class="nav-link" href="/myapp/view_users/"><i class="fas fa-users"></i> <span>View Users</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/myapp/verify_expert/"><i class="fas fa-user-check"></i> <span>Verify Experts</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/myapp/admin_view_post/"><i class="fas fa-newspaper"></i> <span>View Posts</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/myapp/change_password/"><i class="fas fa-key"></i> <span>Change Password</span></a>
+            </li>
+            <hr class="sidebar-divider">
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities">
+                    <i class="fas fa-chart-line"></i> <span>User Reports</span>
+                </a>
+                <div id="collapseUtilities" class="collapse">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">User Reports:</h6>
+                        <a class="collapse-item" href="/myapp/view_feedback/">Feedbacks</a>
+                        <a class="collapse-item" href="/myapp/view_complaint/">Complaints</a>
+                        <a class="collapse-item" href="/myapp/view_expert_review/">Review & Rating</a>
+                    </div>
+                </div>
+            </li>
+            <hr class="sidebar-divider d-none d-md-block">
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+
+                <!-- Topbar (unchanged except name) -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin User</span>
+                                <img class="img-profile rounded-circle" src="../static/admin/img/undraw_profile.svg">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in">
+                                <a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Profile</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>Logout
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- End Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Welcome Header -->
+                    <div class="text-center mb-5">
+                        <h1 class="welcome-header">Welcome back, Admin!</h1>
+                        <p class="lead text-muted">Here's what's happening with your platform today.</p>
+                    </div>
+
+                    <!-- Stats Row -->
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stats-card shadow h-100 py-3">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Users</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">12,845</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-users fa-2x text-primary"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stats-card shadow h-100 py-3">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Pending Experts</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">28</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-user-clock fa-2x text-success"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stats-card shadow h-100 py-3">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Posts</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">3,421</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-newspaper fa-2x text-warning"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stats-card shadow h-100 py-3">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Complaints</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">9</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <h3 class="section-title"><i class="fas fa-bolt mr-2"></i>Quick Actions</h3>
+                    <div class="row mb-5">
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <a href="/myapp/view_users/" class="text-decoration-none">
+                                <div class="card quick-link-card shadow text-white h-100 py-4">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-users fa-3x mb-3"></i>
+                                        <h4 class="mb-0">Manage Users</h4>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <a href="/myapp/verify_expert/" class="text-decoration-none">
+                                <div class="card quick-link-card shadow text-white h-100 py-4">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-user-shield fa-3x mb-3"></i>
+                                        <h4 class="mb-0">Verify Experts</h4>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <a href="/myapp/admin_view_post/" class="text-decoration-none">
+                                <div class="card quick-link-card shadow text-white h-100 py-4">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-newspaper fa-3x mb-3"></i>
+                                        <h4 class="mb-0">Review Posts</h4>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Block for child templates -->
+                    {% block body %}
+                    {% endblock %}
+
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright © Your Platform 2025 — Admin Dashboard</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Scripts (unchanged) -->
+    <script src="../static/admin/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/admin/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../static/admin/js/sb-admin-2.min.js"></script>
+</body>
+</html>

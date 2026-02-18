@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeShare | Secure Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <style>
+        :root {
+            --primary-navy: #0f172a;
+            --accent-blue: #2563eb;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-soft: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-soft);
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .login-container {
+            height: 100vh;
+            display: flex;
+        }
+
+        /* Left Side: Professional Branding Area */
+        .brand-side {
+            background: linear-gradient(135deg, var(--primary-navy) 0%, #1e293b 100%);
+            width: 55%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            color: white;
+            position: relative;
+        }
+
+        .brand-side::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.1;
+        }
+
+        .brand-content {
+            z-index: 2;
+            text-align: center;
+        }
+
+        .brand-logo-img {
+            width: 80px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+
+        /* Right Side: Clean Login Form */
+        .form-side {
+            width: 45%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.05);
+        }
+
+        .form-header h2 {
+            font-weight: 700;
+            color: var(--primary-navy);
+            margin-bottom: 10px;
+        }
+
+        .form-header p {
+            color: var(--text-muted);
+            margin-bottom: 35px;
+        }
+
+        /* Premium Inputs */
+        .form-floating > .form-control {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding-left: 15px;
+        }
+
+        .form-floating > .form-control:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-signin {
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-signin:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Django Messages Styling */
+        .alert-messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+        }
+
+        .social-links {
+            margin-top: 30px;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 20px;
+            text-align: center;
+        }
+
+        .social-links a {
+            color: var(--text-muted);
+            margin: 0 15px;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+
+        .social-links a:hover { color: var(--accent-blue); }
+
+        @media (max-width: 992px) {
+            .brand-side { display: none; }
+            .form-side { width: 100%; padding: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    {% if messages %}
+    <div class="alert-messages animate__animated animate__fadeInRight">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow" role="alert">
+            <i class="fas fa-info-circle me-2"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="login-container">
+        <div class="brand-side">
+            <div class="brand-content animate__animated animate__fadeInLeft">
+                <div class="mb-4">
+                    <i class="fas fa-shield-halved fa-5x text-info"></i>
+                </div>
+                <h1 class="display-4 fw-bold mb-3">SafeShare</h1>
+                <p class="lead mb-5 opacity-75">Enterprise-grade document security and expert collaboration. Your data, protected by experts.</p>
+                
+
+            </div>
+        </div>
+
+        <div class="form-side">
+            <div class="animate__animated animate__fadeInUp">
+                <div class="form-header">
+                    <h2>Welcome Back</h2>
+                    <p>Please enter your credentials to access your secure workspace.</p>
+                </div>
+
+                <form action="/myapp/login_post/" method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="uName" name="uname" placeholder="Username" required>
+                        <label for="uName">Username</label>
+                    </div>
+
+                    <div class="form-floating mb-4 position-relative">
+                        <input type="password" class="form-control" id="pass" name="password" placeholder="Password" required>
+                        <label for="pass">Password</label>
+                        <span id="togglePass" class="fa fa-eye position-absolute" 
+                              style="right: 20px; top: 20px; cursor: pointer; color: var(--text-muted);"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember">
+                            <label class="form-check-label small text-muted" for="remember">Remember me</label>
+                        </div>
+                        <a href="#" class="small text-decoration-none fw-600 text-primary">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-signin w-100 text-white">
+                        SIGN IN
+                    </button>
+
+                    <p class="text-center mt-4 text-muted small">
+                        Don't have an expert account? 
+                        <a href="/myapp/expert_registration/" class="text-primary fw-bold text-decoration-none">Register Now</a>
+                    </p>
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Password Visibility Toggle
+        $('#togglePass').on('click', function() {
+            const passInput = $('#pass');
+            const type = passInput.attr('type') === 'password' ? 'text' : 'password';
+            passInput.attr('type', type);
+            $(this).toggleClass('fa-eye fa-eye-slash');
+        });
+
+        // Auto-hide alert messages after 5 seconds
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+{% extends 'adminindex.html' %}
+{% block body %}
+
+<style>
+    /* Card Container */
+    .post-container {
+        background: #1a1d2b;
+        border-radius: 20px;
+        border: 1px solid #2d324d;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+
+    /* Header styling */
+    .post-header {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 25px 30px;
+        border-bottom: 1px solid #2d324d;
+    }
+
+    /* Table Reset */
+    .table {
+        color: #f8fafc;
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: rgba(255, 255, 255, 0.04);
+        color: #94a3b8;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1.2px;
+        padding: 18px;
+        border: none;
+    }
+
+    .table td {
+        padding: 20px 18px;
+        border-bottom: 1px solid #2d324d;
+        vertical-align: top; /* Better for long descriptions */
+    }
+
+    /* Post Image Styling */
+    .post-img-wrapper {
+        position: relative;
+        width: 120px;
+    }
+
+    .post-img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 2px solid #2d324d;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .post-img:hover {
+        transform: scale(1.1) rotate(2deg);
+        border-color: #a29bfe;
+        box-shadow: 0 10px 25px rgba(162, 155, 254, 0.3);
+    }
+
+    /* User Tag */
+    .user-tag {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(162, 155, 254, 0.1);
+        color: #a29bfe;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    /* Caption & Description Styling */
+    .caption-text {
+        color: #f8fafc;
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 5px;
+    }
+
+    .description-box {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        max-height: 80px;
+        overflow-y: auto;
+        padding-right: 5px;
+    }
+
+    /* Custom Scrollbar for Description */
+    .description-box::-webkit-scrollbar {
+        width: 4px;
+    }
+    .description-box::-webkit-scrollbar-thumb {
+        background: #2d324d;
+        border-radius: 10px;
+    }
+
+    .date-pill {
+        color: #64748b;
+        font-size: 0.75rem;
+        font-family: 'Monaco', monospace;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="post-container">
+        
+        <div class="post-header d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-1 fw-bold text-white">Community Posts</h4>
+                <p class="text-muted small mb-0">Reviewing shared content and user engagement</p>
+            </div>
+            <div class="text-end">
+                <span class="badge rounded-pill bg-dark border border-secondary px-3 py-2">
+                    <i class="bi bi-grid-3x3 me-2"></i>{{ data|length }} Posts
+                </span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>User & Date</th>
+                        <th class="text-center">Media</th>
+                        <th>Content Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in data %}
+                    <tr>
+                        <td class="text-center text-muted small">{{ forloop.counter }}</td>
+                        <td style="min-width: 180px;">
+                            <div class="user-tag mb-2">
+                                <i class="bi bi-person-circle me-2"></i>{{ i.user.name }}
+                            </div>
+                            <div class="date-pill">
+                                <i class="bi bi-calendar3 me-2"></i>{{ i.date }}
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <div class="post-img-wrapper mx-auto">
+                                <img src="{{ i.photo.url }}" class="post-img" alt="Post Content">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="caption-text text-truncate text-dark" style="max-width: 400px;">
+                                {{ i.caption }}
+                            </div>
+                            <div class="description-box">
+                                {{ i.description }}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5">
+                            <i class="bi bi-camera-video-off display-4 text-muted"></i>
+                            <p class="text-muted mt-3">No posts have been shared yet.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

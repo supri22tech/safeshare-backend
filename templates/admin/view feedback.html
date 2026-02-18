@@ -1,0 +1,190 @@
+{% extends 'adminindex.html' %}
+{% block body %}
+
+<style>
+    /* Card Container with Soft Glass Effect */
+    .feedback-wrapper {
+        background: #1a1d2b;
+        border: 1px solid #2d324d;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header with Gradient Accents */
+    .feedback-top-bar {
+        padding: 25px 30px;
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid #2d324d;
+    }
+
+    /* Table Reset for Dark Mode */
+    .table {
+        color: #e2e8f0;
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table thead th {
+        background: rgba(255, 255, 255, 0.04);
+        color: #94a3b8;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        padding: 18px 25px;
+        border: none;
+    }
+
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background: rgba(162, 155, 254, 0.08) !important;
+    }
+
+    .table td {
+        padding: 22px 25px;
+        border-bottom: 1px solid #2d324d;
+        vertical-align: middle;
+    }
+
+    /* Sentiment-Based Rating Pills */
+    .rating-box {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.85rem;
+    }
+
+    /* Color Logic for Ratings */
+    .rating-high { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+    .rating-mid { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
+    .rating-low { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+
+    /* Avatar and Name */
+    .user-profile {
+        display: flex;
+        align-items: center;
+    }
+
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(45deg, #6366f1, #a855f7);
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+    }
+
+    .message-bubble {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 12px 18px;
+        border-radius: 12px;
+        color: #cbd5e1;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        display: inline-block;
+        max-width: 100%;
+    }
+
+    .date-badge {
+        color: #94a3b8;
+        font-size: 0.8rem;
+        font-family: 'Monaco', 'Consolas', monospace;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="feedback-wrapper">
+
+        <div class="feedback-top-bar d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-1 fw-bold text-white">Experience Feedbacks</h4>
+                <p class="text-muted small mb-0">Monitor user satisfaction and system ratings</p>
+            </div>
+            <div class="text-end">
+                <span class="badge rounded-pill px-3 py-2" style="background: rgba(162, 155, 254, 0.1); color: #a29bfe; border: 1px solid rgba(162, 155, 254, 0.2);">
+                    {{ data|length }} Total Reviews
+                </span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>User Profile</th>
+                        <th>Message</th>
+                        <th>Rating</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in data %}
+                    <tr>
+                        <td class="text-muted small">{{ forloop.counter }}</td>
+                        <td>
+                            <div class="user-profile">
+                                <div class="avatar-circle">
+                                    {{ i.user.name|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <div class="fw-bold ">{{ i.user.name }}</div>
+                                    <div class="text-muted x-small">Verified User</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="message-bubble">
+                                <i class="bi bi-quote text-muted me-1"></i>{{ i.feedback }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rating-box
+                                {% if i.rating|add:0 >= 4 %}rating-high
+                                {% elif i.rating|add:0 == 3 %}rating-mid
+                                {% else %}rating-low{% endif %}">
+                                <i class="bi bi-star-fill me-2"></i> {{ i.rating }}/5
+                            </div>
+                        </td>
+                        <td>
+                            <div class="date-badge">
+                                <i class="bi bi-clock-history me-1"></i> {{ i.date }}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="bi bi-layers display-4 d-block mb-3"></i>
+                                <p>No feedback found in records.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
