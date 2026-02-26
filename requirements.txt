@@ -1,0 +1,7 @@
+Django==3.2.25
+mysqlclient==2.2.7
+Pillow
+opencv-python
+numpy
+pytesseract
+scikit-image

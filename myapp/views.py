@@ -474,33 +474,43 @@ def check_image_quality(image_path):
         return False, f"Error processing image: {str(e)}"
 
 
+import logging
+logger = logging.getLogger(__name__)
+
 def android_user_registration(request):
-
-    iname = request.POST['name']
-    email = request.POST['email']
-    phone = request.POST['phone']
-    place = request.POST['place']
-    pincode = request.POST['pincode']
-    district = request.POST['district']
-    gender = request.POST['gender']
-    dob_str = request.POST['dob']
-    username = request.POST['username']
-    password = request.POST['password']
-
-    photo = request.FILES['photo']
-    adhaaer = request.FILES.get('adhaaer')
-    user = User.objects.create(
-        username=username,
-        password=make_password(password),
-        email=email,
-        first_name=iname
-    )
-    user.save()
-    user.groups.add(Group.objects.get(name="User"))
-
-    # ---------------- CREATE AUTH USER ----------------
+    logger.info("=== android_user_registration started ===")
+    
     try:
-    # if True:
+        iname = request.POST.get('name', '')
+        email = request.POST.get('email', '')
+        phone = request.POST.get('phone', '')
+        place = request.POST.get('place', '')
+        pincode = request.POST.get('pincode', '')
+        district = request.POST.get('district', '')
+        gender = request.POST.get('gender', '')
+        dob_str = request.POST.get('dob', '')
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        
+        logger.info(f"Received registration request - name: {iname}, email: {email}, phone: {phone}")
+        
+        photo = request.FILES.get('photo')
+        adhaaer = request.FILES.get('adhaaer')
+        
+        if not all([iname, email, phone, place, pincode, district, gender, dob_str, username, password, photo, adhaaer]):
+            logger.warning("Missing required fields")
+            return JsonResponse({"status": "na", "message": "Missing required fields"})
+        
+        user = User.objects.create(
+            username=username,
+            password=make_password(password),
+            email=email,
+            first_name=iname
+        )
+        user.save()
+        user.groups.add(Group.objects.get(name="User"))
+        logger.info(f"User created with ID: {user.id}")
+
         ob = User_table()
         ob.LOGIN = user
         ob.name = iname
@@ -514,92 +524,146 @@ def android_user_registration(request):
         ob.adhaaer = adhaaer
         ob.dob = dob_str
 
-
         fs = FileSystemStorage()
         fp = fs.save(adhaaer.name, adhaaer)
-
         image_path = r"C:\Users\lenovo\PycharmProjects\safeshare\media/" + fp
+        logger.info(f"Aadhaar image saved: {image_path}")
 
         is_valid, message = check_image_quality(image_path)
+        logger.info(f"Image quality check: {is_valid}, {message}")
         if not is_valid:
             user.delete()
+            logger.warning(f"Image quality failed: {message}")
             return JsonResponse({"status": "na", "message": message})
 
-        hp = subprocess.run([
-            r'C:\Python310\python.exe',
-            r'C:\Users\lenovo\PycharmProjects\safeshare\myapp\dob_ocr.py'
-        ], input=image_path.encode('utf-8'))
+        try:
+            from myapp.dob_ocr import extract_details
+            logger.info("Starting OCR extraction...")
+            dob, name, aadhaar, gender, full_text = extract_details(image_path)
+            logger.info(f"OCR Extracted - Name: {name}, DOB: {dob}, Aadhaar: {aadhaar}, Gender: {gender}")
+        except Exception as e:
+            logger.error(f"OCR Error: {str(e)}", exc_info=True)
+            dob, name, aadhaar, gender = None, None, None, None
 
-        name = None
-        dob = None
+        if not name:
+            logger.warning("OCR failed to extract name from image")
+            user.delete()
+            return JsonResponse({"status": "na", "message": "Could not extract name from Aadhaar image"})
+        
+        if not dob:
+            logger.warning("OCR failed to extract DOB from image")
+            user.delete()
+            return JsonResponse({"status": "na", "message": "Could not extract DOB from Aadhaar image"})
+        
+        name_match = False
+        if name and iname:
+            ocr_name_clean = name.lower().replace(' ', '').strip()
+            input_name_clean = iname.lower().replace(' ', '').strip()
+            name_match = ocr_name_clean in input_name_clean or input_name_clean in ocr_name_clean
+            logger.info(f"Name matching - OCR: '{name}', Input: '{iname}', Match: {name_match}")
+        
+        if name_match and dob:
+            try:
+                dob_parts = dob.split("/")
+                if len(dob_parts) == 3:
+                    dob_year = dob_parts[2]
+                    age = int(datetime.now().strftime("%Y")) - int(dob_year)
+                    logger.info(f"Calculated age: {age}")
+                else:
+                    age = 0
+                    logger.warning(f"Invalid DOB format: {dob}")
+            except Exception as e:
+                logger.error(f"DOB parsing error: {str(e)}")
+                age = 0
 
-
-        with open(r"C:\Users\lenovo\PycharmProjects\safeshare\myapp\extracted_details.txt", "r", encoding="utf-8") as f:
-            for line in f:
-                if line.startswith("Name:"):
-                    name = line.replace("Name:", "").strip()
-                elif line.startswith("DOB:"):
-                    dob = line.replace("DOB:", "").strip()
-        print("Name:", name)
-        print("DOB:", dob)
-        if name==iname:
-            dob=dob.split("/")[-1]
-            age=int(datetime.now().strftime("%Y"))-int(dob)
-
-            if age>=18:
-                ob.status="verified"
+            if age >= 18:
+                ob.status = "verified"
                 ob.save()
+                logger.info("User verified as adult")
 
-                res=theftdetection(ob)
+                try:
+                    res = theftdetection(ob)
+                    logger.info(f"Theft detection result: {res}")
+                except Exception as e:
+                    logger.error(f"Theft detection error: {str(e)}", exc_info=True)
+                    res = "error"
+
                 if res == "ok":
-                    enf([(ob.id, str(ob.photo))])
+                    try:
+                        enf([(ob.id, str(ob.photo))])
+                        logger.info("Face embedding saved")
+                    except Exception as e:
+                        logger.error(f"Face embedding error: {str(e)}", exc_info=True)
+
                     otp = random.randint(10000, 99999)
-                    print(otp)
+                    logger.info(f"Generated OTP: {otp}")
+                    
                     ob.status = "pending"
                     ob.save()
-                    sendmail(email, otp)
-                    return JsonResponse({"status": "ok", "message": "verified_adult","otp":str(otp),"id":ob.id})
-                else:
-                    ob.identity_status="theft"
-                    ob.save()
-
-                    uob=ob.LOGIN
-                    uob.delete()
-                    return JsonResponse({"status": "ok", "message": "Theft Detected"})
-
-
-
-            else:
-                ob.status="minor"
-                ob.save()
-                res = theftdetection(ob)
-                if res == "ok":
-
-                    enf([(ob.id, str(ob.photo))])
-
-                    otp = random.randint(10000, 99999)
-                    print(otp)
-                    sendmail(email, otp)
-                    return JsonResponse({"status": "ok", "message": "verified_minor","otp":str(otp),"id":ob.id})
+                    
+                    try:
+                        sendmail(email, otp)
+                        logger.info(f"OTP sent to email: {email}")
+                    except Exception as e:
+                        logger.error(f"Email send error: {str(e)}", exc_info=True)
+                    
+                    return JsonResponse({"status": "ok", "message": "verified_adult", "otp": str(otp), "id": ob.id})
                 else:
                     ob.identity_status = "theft"
                     ob.save()
-
                     uob = ob.LOGIN
                     uob.delete()
+                    logger.warning("Theft detected, user deleted")
                     return JsonResponse({"status": "ok", "message": "Theft Detected"})
+            else:
+                ob.status = "minor"
+                ob.save()
+                logger.info("User marked as minor")
 
+                try:
+                    res = theftdetection(ob)
+                    logger.info(f"Theft detection result (minor): {res}")
+                except Exception as e:
+                    logger.error(f"Theft detection error: {str(e)}", exc_info=True)
+                    res = "error"
 
+                if res == "ok":
+                    try:
+                        enf([(ob.id, str(ob.photo))])
+                        logger.info("Face embedding saved (minor)")
+                    except Exception as e:
+                        logger.error(f"Face embedding error: {str(e)}", exc_info=True)
 
+                    otp = random.randint(10000, 99999)
+                    logger.info(f"Generated OTP (minor): {otp}")
+                    
+                    try:
+                        sendmail(email, otp)
+                        logger.info(f"OTP sent to email: {email}")
+                    except Exception as e:
+                        logger.error(f"Email send error: {str(e)}", exc_info=True)
+                    
+                    return JsonResponse({"status": "ok", "message": "verified_minor", "otp": str(otp), "id": ob.id})
+                else:
+                    ob.identity_status = "theft"
+                    ob.save()
+                    uob = ob.LOGIN
+                    uob.delete()
+                    logger.warning("Theft detected (minor), user deleted")
+                    return JsonResponse({"status": "ok", "message": "Theft Detected"})
         else:
+            logger.warning(f"Name verification failed. OCR: {name}, Input: {iname}, DOB: {dob}")
             user.delete()
-
-            return JsonResponse({"status": "ok","message":"pending"})
+            return JsonResponse({"status": "ok", "message": "pending"})
+            
     except Exception as e:
-        print(e)
-        user.delete()
-
-        return JsonResponse({"status":"na","message":"Invalid"})
+        logger.error(f"Registration error: {str(e)}", exc_info=True)
+        try:
+            if 'user' in locals():
+                user.delete()
+        except:
+            pass
+        return JsonResponse({"status": "na", "message": "Registration failed. Please try again."})
 import random
 def sendmail(email,otp):
 
