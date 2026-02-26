@@ -1,3 +1,6 @@
+import smtplib
+from email.mime.text import MIMEText
+
 from django.contrib.auth import authenticate, login
 from django.db.models.query_utils import Q
 from django.shortcuts import render, redirect
@@ -21,22 +24,27 @@ from .models import *
 from django.contrib.auth.models import User
 # Create your views here.
 from datetime import datetime
+import cv2
+import numpy as np
+from PIL import Image
 # from .encode_faces import enf
 
 def loginget(request):
-    # ob=User_table.objects.all()
-    # for i in ob:
-    #     obb=i.LOGIN
-    #     obb.delete()
+    # hg = User.objects.get(id=request.user.id)
+    # hg.set_password="admin123"
+    # hg.save()
     return render(request,"index.html")
 
 def login_post(request):
+
+
     uname=request.POST['uname']
     password=request.POST['password']
 
     print(request.POST)
 
     obj=authenticate(request,username=uname,password=password)
+
 
 
     if obj is not None:
@@ -401,6 +409,17 @@ def android_login(request):
         "message": "Invalid username or password"
     })
 
+def android_login1(request):
+    id = request.POST['id']
+
+    ob=User_table.objects.get(id=id)
+    ob.status="verified"
+    ob.save()
+    return JsonResponse({
+        "task": "ok",
+
+    })
+
 import cv2
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
@@ -420,12 +439,39 @@ def calculate_age(dob):
         (today.month, today.day) < (dob.month, dob.day)
     )
 def theftdetection(ob):
-    fname=ob.photo.path
-    res=rec_face_image(fname)
-    for i in res:
-        if str(i)!=str(ob.id):
-            return str(i)
+    try:
+        fname=ob.photo.path
+        res=rec_face_image(fname)
+        for i in res:
+            if str(i)!=str(ob.id):
+                return str(i)
+    except:
+        pass
     return "ok"
+
+
+def check_image_quality(image_path):
+    try:
+        img = cv2.imread(image_path)
+        if img is None:
+            return False, "Unable to read image"
+
+        height, width = img.shape[:2]
+        if width < 300 or height < 400:
+            return False, "Image resolution too low (minimum 300x400)"
+
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
+        print(f"Image quality check - Laplacian variance: {laplacian_var}")
+
+        if laplacian_var < 50:
+            print(f"Image rejected - too blurry (variance: {laplacian_var})")
+            return False, "Aadhaar card image is blurry. Please upload a clearer image."
+            return False, "Aadhaar card image is blurry. Please upload a clearer image."
+
+        return True, "Quality check passed"
+    except Exception as e:
+        return False, f"Error processing image: {str(e)}"
 
 
 def android_user_registration(request):
@@ -471,7 +517,13 @@ def android_user_registration(request):
 
         fs = FileSystemStorage()
         fp = fs.save(adhaaer.name, adhaaer)
+
         image_path = r"C:\Users\lenovo\PycharmProjects\safeshare\media/" + fp
+
+        is_valid, message = check_image_quality(image_path)
+        if not is_valid:
+            user.delete()
+            return JsonResponse({"status": "na", "message": message})
 
         hp = subprocess.run([
             r'C:\Python310\python.exe',
@@ -480,6 +532,7 @@ def android_user_registration(request):
 
         name = None
         dob = None
+
 
         with open(r"C:\Users\lenovo\PycharmProjects\safeshare\myapp\extracted_details.txt", "r", encoding="utf-8") as f:
             for line in f:
@@ -500,7 +553,12 @@ def android_user_registration(request):
                 res=theftdetection(ob)
                 if res == "ok":
                     enf([(ob.id, str(ob.photo))])
-                    return JsonResponse({"status": "ok", "message": "verified_adult"})
+                    otp = random.randint(10000, 99999)
+                    print(otp)
+                    ob.status = "pending"
+                    ob.save()
+                    sendmail(email, otp)
+                    return JsonResponse({"status": "ok", "message": "verified_adult","otp":str(otp),"id":ob.id})
                 else:
                     ob.identity_status="theft"
                     ob.save()
@@ -516,8 +574,13 @@ def android_user_registration(request):
                 ob.save()
                 res = theftdetection(ob)
                 if res == "ok":
+
                     enf([(ob.id, str(ob.photo))])
-                    return JsonResponse({"status": "ok", "message": "verified_minor"})
+
+                    otp = random.randint(10000, 99999)
+                    print(otp)
+                    sendmail(email, otp)
+                    return JsonResponse({"status": "ok", "message": "verified_minor","otp":str(otp),"id":ob.id})
                 else:
                     ob.identity_status = "theft"
                     ob.save()
@@ -537,7 +600,35 @@ def android_user_registration(request):
         user.delete()
 
         return JsonResponse({"status":"na","message":"Invalid"})
+import random
+def sendmail(email,otp):
 
+    try:
+
+            try:
+                gmail = smtplib.SMTP('smtp.gmail.com', 587)
+                gmail.ehlo()
+                gmail.starttls()
+                gmail.login('supriyapv222006@gmail.com', 'mkuttkdohtmodcqa')
+                print("login=======")
+            except Exception as e:
+                return "na"
+            msg = MIMEText("Your verification OTP : " + str(otp))
+            print(msg)
+            msg['Subject'] = 'Safe Share'
+            msg['To'] = email
+            msg['From'] = 'supriyapv222006@gmail.com'
+
+            print("ok====")
+
+            try:
+                gmail.send_message(msg)
+            except Exception as e:
+                return "na"
+            return "ok"
+
+    except Exception as e:
+       return "ok"
 def insert_feedback(request):
     feeedbackk=request.POST['feedback']
     lid=request.POST['lid']
@@ -547,6 +638,14 @@ def insert_feedback(request):
     ob.feedback=feeedbackk
     ob.rating=rating
     ob.date=datetime.today()
+    ob.save()
+    return JsonResponse({"status": "ok"})
+
+def veryfy_user(request):
+
+    lid=request.POST['lid']
+    ob=User_table.objects.get(id=lid)
+    ob.status = "minor"
     ob.save()
     return JsonResponse({"status": "ok"})
 
@@ -1053,14 +1152,17 @@ def post_insert(request):
             print(res,ob.user.id)
             for j in res:
                 if str(j) != str(ob.user.id):
-                    blurred = cv2.blur(face, (80,80))
-                    img[y:y + h, x:x + w] = blurred
-                    obn = ImageNotification()
-                    obn.user = User_table.objects.get(id=j)
-                    obn.post = ob
-                    obn.date = datetime.today()
-                    obn.status = 'pending'
-                    obn.save()
+                    try:
+                        blurred = cv2.blur(face, (80,80))
+                        img[y:y + h, x:x + w] = blurred
+                        obn = ImageNotification()
+                        obn.user = User_table.objects.get(id=j)
+                        obn.post = ob
+                        obn.date = datetime.today()
+                        obn.status = 'pending'
+                        obn.save()
+                    except:
+                        pass
 
         fn = path
         print(fn)
@@ -1106,14 +1208,23 @@ def add_comment(request):
     lid = request.POST['lid']
     pid = request.POST['pid']
     cmd = request.POST['comment']
-    ob = comment()
-    ob.user=User_table.objects.get(LOGIN=lid)
-    ob.post=post.objects.get(id=pid)
-    ob.comment=cmd
-    ob.date=datetime.now().date()
-    ob.save()
 
-    return JsonResponse({"status": "ok"})
+    text_vector = vectorizer.transform([cmd])
+    prediction = model.predict(text_vector)[0]
+
+    # 4. Map the 0/1 result to a readable string
+    # 1 = Bullying, 0 = Non-Bullying
+    label = "Bullying" if int(prediction) == 1 else "Non-Bullying"
+    if label=="Non-Bullying":
+        ob = comment()
+        ob.user=User_table.objects.get(LOGIN=lid)
+        ob.post=post.objects.get(id=pid)
+        ob.comment=cmd
+        ob.date=datetime.now().date()
+        ob.save()
+
+        return JsonResponse({"status": "ok"})
+    return JsonResponse({"status": "Bullying"})
 
 
 def view_otherusers(request):
@@ -1421,8 +1532,9 @@ def view_myFriends_for_share(request):
         })
     print(data)
     return JsonResponse({'status': 'ok', "data": data})
-
-
+import joblib
+model = joblib.load('cyber_model.pkl')
+vectorizer = joblib.load('vectorizer.pkl')
 def send_view_shared_details(request):
     lid=request.POST['lid']
     usr=User_table.objects.get(LOGIN=lid)
@@ -1437,6 +1549,7 @@ def send_view_shared_details(request):
             "date":str(i.date),
             "status":str(i.status),
         })
+    print(l)
     return JsonResponse({"status":"ok",'data':l})
 
 def user_profile(request):
@@ -1521,6 +1634,33 @@ def get_user_profile(request):
 
 
 @csrf_exempt
+def clear_face_pickles(request):
+    """
+    Clear the face encodings pickle file (for development purposes)
+    """
+    try:
+        import os
+        pickle_path = r'C:\Users\lenovo\PycharmProjects\safeshare\faces.pickles'
+        
+        if os.path.exists(pickle_path):
+            os.remove(pickle_path)
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Face pickle file deleted successfully'
+            })
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Face pickle file not found'
+            })
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        })
+
+
+@csrf_exempt
 def update_user_profile(request):
     """
     Update user profile data
@@ -1554,14 +1694,17 @@ def update_user_profile(request):
             user.dob = dob
 
         # Update photo if provided
-        if 'photo' in request.FILES:
-            user.photo = request.FILES['photo']
+
 
         # Update Aadhaar if provided
         if 'aadhaar' in request.FILES:
             user.adhaaer = request.FILES['aadhaar']
-
         user.save()
+        if 'photo' in request.FILES:
+            user.photo = request.FILES['photo']
+            user.save()
+            enf([(user.id, str(user.photo))])
+
 
         return JsonResponse({
             'status': 'success',

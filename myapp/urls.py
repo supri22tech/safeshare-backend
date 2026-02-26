@@ -44,6 +44,8 @@ urlpatterns = [
 
 
     path("android_login/",views.android_login),
+    path("android_login1/",views.android_login1),
+    path("veryfy_user/",views.veryfy_user),
     path("android_user_registration/",views.android_user_registration),
     path("insert_complaint/",views.insert_complaint),
     path("insert_feedback/",views.insert_feedback),
@@ -101,5 +103,6 @@ urlpatterns = [
 
     path('get_user_profile/', views.get_user_profile, name='get_user_profile'),
     path('update_user_profile/', views.update_user_profile, name='update_user_profile'),
+    path('clear_face_pickles/', views.clear_face_pickles, name='clear_face_pickles'),
 
 ]

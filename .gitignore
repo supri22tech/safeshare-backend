@@ -49,3 +49,13 @@ node_modules/
 # Temporary files
 *.swp
 *.swo
+
+# ML Models and pickles
+*.pkl
+*.pickles
+
+# Face images
+cropped_faces/
+
+# User data
+myapp/extracted_details.txt
